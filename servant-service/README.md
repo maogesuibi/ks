@@ -45,7 +45,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/yourusername/servant-service.git
+git clone https://github.com/maogesuibi/ks.git
 cd servant-service
 
 # 复制环境变量模板
@@ -76,7 +76,7 @@ docker-compose ps
 
 ```bash
 # 克隆项目
-git clone https://github.com/yourusername/servant-service.git
+git clone https://github.com/maogesuibi/ks.git
 cd servant-service
 
 # 安装依赖
