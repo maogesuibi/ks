@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 小奴为您服务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            background: #000;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #FF9500, #FF5000);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            resize: vertical;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #FF9500, #FF5000);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 80, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        
+        .result-section {
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FF5000;
+        }
+        
+        .card h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .balance-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .balance-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e1e1e1;
+            transition: all 0.3s;
+        }
+        
+        .balance-item:hover {
+            border-color: #FF5000;
+            transform: translateY(-2px);
+        }
+        
+        .balance-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF5000;
+            margin: 5px 0;
+        }
+        
+        .flow-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+        
+        .flow-item:last-child {
+            border-bottom: none;
+        }
+        
+        .flow-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .flow-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .flow-time {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .flow-desc {
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .flow-amount {
+            font-weight: 600;
+            text-align: right;
+            font-size: 14px;
+        }
+        
+        .flow-hint {
+            grid-column: 1 / -1;
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+        
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-pending {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #FF5000;
+            padding: 20px;
+            font-size: 16px;
+        }
+        
+        .error {
+            background: #ffeaea;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #d63031;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+        }
+        
+        .account-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-normal {
+            background: #FF5000;
+            color: white;
+        }
+        
+        .status-warning {
+            background: #ff9500;
+            color: white;
+        }
+        
+        .status-danger {
+            background: #ff3b30;
+            color: white;
+        }
+        
+        .status-excellent {
+            background: #34c759;
+            color: white;
+        }
+        
+        .status-great {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .user-stats {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-bar">
+            <div id="current-time">12:12</div>
+            <div>🤖 小奴状态良好 👑 大主人@小豆老师 💖</div>
+        </div>
+        
+        <div class="header">
+            <h1>👑 小奴为您服务</h1>
+            <p>💰 智能识别流水状态 · 贴心管家服务 ✨</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-group">
+                <textarea id="ck-input" placeholder="👋 请小主人输入您的ck~"></textarea>
+                <button class="btn" id="query-btn">✨ 立即查询 ✨</button>
+            </div>
+            
+            <div class="result-section">
+                <div id="welcome-message" class="welcome-message">
+                    🎯 小奴已准备就绪，等待小主人吩咐~
+                </div>
+                <div id="result-area">
+                    <!-- 结果将动态显示在这里 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新时间显示
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        // 初始化时间
+        updateTime();
+        setInterval(updateTime, 60000);
+        
+        document.getElementById('query-btn').addEventListener('click', function() {
+            const ck = document.getElementById('ck-input').value.trim();
+            if (!ck) {
+                alert('👋 请小主人输入您的ck~');
+                return;
+            }
+            
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = '🔍 查询中...';
+            
+            // 更新欢迎消息
+            document.getElementById('welcome-message').innerHTML = '🎯 小奴正在努力查询中，请稍候片刻~';
+            
+            document.getElementById('result-area').innerHTML = `
+                <div class="loading">
+                    <div>✨ 小奴正在为您查询数据...</div>
+                    <div style="margin-top:10px;font-size:14px;">请小主人耐心等待，马上就好~</div>
+                </div>
+            `;
+            
+            // 修复：使用正确的API地址
+            const apiUrl = window.location.origin + '/api/query';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cookie: ck })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`网络响应不正常: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 查询完成后更新欢迎消息
+                if (data.is_new_user) {
+                    document.getElementById('welcome-message').innerHTML = '🎉 欢迎新主人~注意查收您的流水数据哦~';
+                } else {
+                    document.getElementById('welcome-message').innerHTML = '🎉 欢迎回来~注意查收您的流水数据哦~';
+                }
+                displayEnhancedResult(data);
+            })
+            .catch(error => {
+                document.getElementById('welcome-message').innerHTML = '😔 查询遇到问题，请小主人再试一次~';
+                document.getElementById('result-area').innerHTML = 
+                    '<div class="error">❌ 请求失败: ' + error.message + '</div>';
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = '✨ 立即查询 ✨';
+            });
+        });
+        
+        function displayEnhancedResult(data) {
+            let html = '';
+            
+            if (!data.success) {
+                html = '<div class="error">❌ ' + (data.msg || '查询失败') + '</div>';
+            } else {
+                // 获取账号状态信息
+                const statusInfo = data.account_status || {
+                    status: "normal",
+                    message: "✅ 状态正常",
+                    color: "#FF5000",
+                    icon: "😊"
+                };
+                
+                const statusClass = 'status-' + statusInfo.status;
+                
+                // 用户信息
+                html += '<div class="card">';
+                html += '<h3>👤 小主人信息</h3>';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+                html += '<div>';
+                html += '<div style="font-size: 16px; font-weight: bold;">' + data.nickname + '</div>';
+                html += '<div style="font-size: 12px; color: #666;">查询时间: ' + (data.query_time || '--') + '</div>';
+                html += '</div>';
+                html += '<div class="account-status ' + statusClass + '">';
+                html += '<span>' + statusInfo.icon + '</span>';
+                html += '<span>' + statusInfo.message + '</span>';
+                html += '</div>';
+                html += '</div>';
+                
+                if (data.is_new_user) {
+                    html += '<div class="user-stats">🎊 首次使用小奴服务~欢迎新主人!</div>';
+                } else {
+                    html += '<div class="user-stats">📊 欢迎回来~小奴继续为您服务</div>';
+                }
+                html += '</div>';
+                
+                // 资产概览
+                html += '<div class="card">';
+                html += '<h3>💰 资产概览</h3>';
+                html += '<div class="balance-info">';
+                html += '<div class="balance-item">';
+                html += '<div>💰 金币余额</div>';
+                html += '<div class="balance-value">' + data.coin.toLocaleString() + '</div>';
+                html += '<div>金币</div>';
+                html += '</div>';
+                html += '<div class="balance-item">';
+                html += '<div>💸 现金余额</div>';
+                html += '<div class="balance-value">' + data.cash.toFixed(2) + '</div>';
+                html += '<div>元</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+                
+                // 🎯 明确调整顺序：先显示金币流水，后显示现金流水
+                
+                // 金币流水 - 现在先显示
+                if (data.coin_log && data.coin_log.length > 0) {
+                    html += '<div class="card">';
+                    html += '<h3>🪙 金币流水</h3>';
+                    data.coin_log.forEach(item => {
+                        const amountText = item.amount >= 0 ? '+' + item.amount : item.amount;
+                        html += '<div class="flow-item">';
+                        html += '<div class="flow-icon">🪙</div>';
+                        html += '<div class="flow-content">';
+                        html += '<div class="flow-time">' + item.time + '</div>';
+                        html += '<div class="flow-desc">' + item.desc + '</div>';
+                        html += '<div class="flow-amount" style="color: ' + (item.amount >= 0 ? '#34c759' : '#ff3b30') + '">';
+                        html += amountText;
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<div class="card">';
+                    html += '<h3>🪙 金币流水</h3>';
+                    html += '<div class="flow-item">📭 暂无金币流水记录</div>';
+                    html += '</div>';
+                }
+                
+                // 现金流水 - 现在后显示
+                if (data.cash_log && data.cash_log.length > 0) {
+                    html += '<div class="card">';
+                    html += '<h3>💸 现金流水</h3>';
+                    data.cash_log.forEach(item => {
+                        const statusClass = 'status-' + item.status;
+                        html += '<div class="flow-item">';
+                        html += '<div class="flow-icon">' + item.icon + '</div>';
+                        html += '<div class="flow-content">';
+                        html += '<div class="flow-time">' + item.time + '</div>';
+                        html += '<div class="flow-desc">' + item.desc + '</div>';
+                        html += '<div class="flow-amount" style="color: ' + item.color + '">';
+                        html += item.amount;
+                        html += '<span class="status-badge ' + statusClass + '">' + item.status_text + '</span>';
+                        html += '</div>';
+                        if (item.hint) {
+                            html += '<div class="flow-hint">💡 ' + item.hint + '</div>';
+                        }
+                        html += '</div>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<div class="card">';
+                    html += '<h3>💸 现金流水</h3>';
+                    html += '<div class="flow-item">📭 暂无现金流水记录</div>';
+                    html += '</div>';
+                }
+            }
+            
+            document.getElementById('result-area').innerHTML = html;
+        }
+    </script>
+    <script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;af4ae704265146558501aa14d36cbc4f&quot;,&quot;r&quot;:1,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+</body>
+</html>

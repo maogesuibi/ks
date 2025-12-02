@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # 主应用服务
+  app:
+    build: .
+    container_name: servant-service
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongo:27017/servant-service
+      - JWT_SECRET=${JWT_SECRET:-your_jwt_secret_key}
+      - JWT_EXPIRES_IN=7d
+      - KUAISHOU_API_URL=https://api.kuaishou.com
+      - KUAISHOU_ACCOUNT_OVERVIEW_PATH=/rest/n/nebula/account/overview
+    depends_on:
+      - mongo
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - servant-network
+
+  # MongoDB数据库服务
+  mongo:
+    image: mongo:5.0
+    container_name: servant-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    networks:
+      - servant-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # 可选：MongoDB管理界面
+  mongo-express:
+    image: mongo-express:latest
+    container_name: servant-mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USER:-admin}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD:-admin123456}
+    depends_on:
+      - mongo
+    networks:
+      - servant-network
+
+networks:
+  servant-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  mongo-config:
